@@ -1,0 +1,224 @@
+/*
+Tic-Tac-Toe
+the game tic-tac-toe
+Ben Burger
+10/16/2017
+*/
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.Color;
+import java.util.Random;
+
+
+public class TicTacToe extends JFrame implements  ActionListener
+{
+   public final static int COUNT = 9;
+   public int playerSelect = 0;
+   public int clickCounter = 0;
+   
+   public final static String X = "X";
+   public final static String O = "O";
+   
+   public int[] avalibleButtons= {0,0,0,0,0,0,0,0,0};
+   
+   public JButton[] buttons = new JButton[COUNT];
+   public String[][] plays = new String[3][3];
+   public GridLayout grid = new GridLayout(3,3,5,5);
+   
+   public TicTacToe()
+   {
+      buildArray();
+      setSize(200,200);
+      setLayout(grid);
+      populateGrid();
+   }
+   
+   
+   //adds button list to grid
+   public void populateGrid()
+   {
+      for(int i = 0;i < COUNT; ++i)
+      {
+         add(buttons[i]);
+      }
+   }
+   
+   
+   //builds button array
+   public void buildArray()
+   {
+      for(int i = 0; i < COUNT ; ++i)
+      {
+         JButton b = new JButton();
+         b.addActionListener(this);
+         buttons[i] = b;
+      }
+   }
+   
+   
+   //stub for actionListener action
+   public int getButtonNumber(JButton b)
+   {
+      for(int i = 0; i < COUNT ; ++i)
+      {
+         if(b == buttons[i])
+         {
+            //this is what to do to the button
+            //System.out.println("" + i);
+            return i;
+         }
+      }
+      return 0;
+   }
+   
+   
+   @Override
+   public void actionPerformed(ActionEvent e)
+   {
+      JButton b = (JButton)e.getSource();
+      getButtonNumber(b);
+      onClick(getButtonNumber(b));
+   }
+   
+   
+   public void onClick(int number)
+   {
+      buttons[number].setEnabled(false);
+      
+      if(playerSelect == 0)
+      {
+         buttons[number].setText(X);
+         playerSelect = 1;
+         remove(number);
+         if(clickCounter != 8)
+            randomClick();
+         clickCounter += 1;
+      }else
+      {
+         buttons[number].setText(O);
+         playerSelect = 0;
+         remove(number);
+         clickCounter += 1;
+      }
+      record(number,buttons[number].getText());
+   }
+   
+   
+   public void record(int num, String letter)
+   {
+      switch(num)
+      {
+         case 0:
+            plays[0][0] = letter;
+            break;
+         case 1:
+            plays[0][1] = letter;
+            break;
+         case 2:
+            plays[0][2] = letter;
+            break;
+         case 3:
+            plays[1][0] = letter;
+            break;
+         case 4:
+            plays[1][1] = letter;
+            break;
+         case 5:
+            plays[1][2] = letter;
+            break;
+         case 6:
+            plays[2][0] = letter;
+            break;
+         case 7:
+            plays[2][1] = letter;
+            break;
+         default:
+            plays[2][2] = letter;
+            break;
+      }
+      
+   }
+   
+   
+   public void remove(int num)
+   {
+      avalibleButtons[num] = 1;      
+   }
+   
+   
+   public void randomClick()
+   {
+      int x = 0;
+      
+      for(int i = 0; i<COUNT ; ++i)
+      {
+         if(avalibleButtons[i] == 0)
+         {
+            x += 1;
+         }
+      }
+      
+      int[] temp = new int[x];
+      int j = 0;
+      
+      for(int i = 0; i < COUNT ;++i)
+      {
+         if(avalibleButtons[i] == 0)
+         {
+            temp[j] = i;
+            j += 1;
+         }  
+      }
+      
+      Random rand = new Random();
+      int randomNum = rand.nextInt(x);
+      
+      int randButton = temp[randomNum];
+      
+      buttons[randButton].doClick();
+   }
+   
+   
+   public static void main(String[] args)
+   {
+      TicTacToe frame = new TicTacToe();
+      frame.setVisible(true);
+      frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+   }
+
+
+   public void checkingWins()
+   {
+      String[] win = {X,X,X};
+      //vertical wins
+      for(int i = 0; i < 3 ; ++i)
+      {
+         String[] toCheck = new String[3];
+         
+         for(int j = 0; j < 3 ; ++j)
+         {
+            toCheck[j] = plays[j][i];                       
+         }
+         if(toCheck == win)
+            System.out.println("WIN");
+      }
+      //horizontal wins
+      for(int i = 0; i < 3 ; ++i)
+      {
+         String[] toCheck = new String[3];
+         
+         for(int j = 0; j < 3 ; ++j)
+         {
+            toCheck[j] = plays[i][j];                       
+         }
+         if(toCheck == win)
+            System.out.println("WIN");
+      }
+      //diagonal wins
+      
+      
+      
+   }
+}
