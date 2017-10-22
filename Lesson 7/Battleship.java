@@ -1,6 +1,6 @@
 /*
 Battleship
-lets play battleship
+lets play battleship... well sort of
 Ben Burger
 10/12/2017
 */
@@ -26,10 +26,8 @@ public class Battleship extends JFrame implements ActionListener
    public JButton[] buttons = new JButton[num];
    public String[] hitList = new String[num];
       
-   
-      
-   public Font font = new Font("Times New Romans",Font.BOLD,50);
    public GridLayout grid = new GridLayout(row,col);
+   
    
    public Battleship()
    {
@@ -41,38 +39,63 @@ public class Battleship extends JFrame implements ActionListener
    }
    
    
+   
+   //randomizes ship creation and populates hitList
    public void buildHitList()
    {
       Random rand = new Random();
       int randNum = rand.nextInt(row);
       int select = rand.nextInt(2);
       
-      //initializes field with all zeros
-      for(int i = 0;i < num;++i)
-      {
-         hitList[i] = miss;
-      }
+      initializeHitList();
       
       //sets ones in indexes of randomly selected colums
       if(select == 0)
       {
-         for(int i = 0;i < 6;++i)
-         {
-            hitList[randNum] = hit;
-            randNum += 6;
-         }
+         buildHor(randNum);
       }else //sets ones in indexes of randomly selected rows
       {  
-         randNum = startList(randNum);
-         
-         for(int i = 0;i < 6;++i)
-         {
-            hitList[randNum] = hit;
-            randNum += 1;
-         }
+         buildVert(randNum);
       }     
-       
    }
+   
+   
+   
+   //makes a vertical ship based on an int
+   public void buildVert(int randNum)
+   {
+      randNum = startList(randNum);
+         
+      for(int i = 0;i < 6;++i)
+      {
+         hitList[randNum] = hit;
+         randNum += 1;
+      }
+   }
+   
+   
+   
+   //makes a horizontal ship based on an int
+   public void buildHor(int randNum)
+   {
+      for(int i = 0;i < 6;++i)
+      {
+         hitList[randNum] = hit;
+         randNum += 6;
+      }
+   }
+   
+   
+   
+   //initializes field with all zeros
+   public void initializeHitList()
+   {
+      for(int i = 0;i < num;++i)
+      {
+         hitList[i] = miss;
+      }
+   }
+   
    
    
    //sets the starting point of a row.
@@ -96,6 +119,8 @@ public class Battleship extends JFrame implements ActionListener
    }
    
    
+   
+   //populates board with blank buttons
    public void buildBoard()
    {
       for(int i = 0;i<num;++i)
@@ -108,12 +133,14 @@ public class Battleship extends JFrame implements ActionListener
    }
    
    
+   
    //************ MAIN ***********
    public static void main(String[] args)
    {  
       frame.setVisible(true);
    }
    //**********END MAIN***********
+   
    
    
    @Override
@@ -130,15 +157,17 @@ public class Battleship extends JFrame implements ActionListener
    }
    
    
+   
    //checks for end of game.
    public void checkEnd()
    {
       if(hitCounter == 6)
       {
-         System.out.println("You Won!!");
+         System.out.println("You Sunk the Battle Ship!!");
          enabledOff();
       }
    }
+   
    
    
    //gets index of button
@@ -156,6 +185,7 @@ public class Battleship extends JFrame implements ActionListener
       return 0;
    }
    
+   
    //checks if the button is a hit or not
    public void hitCheck(JButton b)
    {
@@ -168,10 +198,13 @@ public class Battleship extends JFrame implements ActionListener
             if(b.getText() == hit)
             {
                hitCounter += 1;
+               System.out.println("HIT!!");
             }
          }
       }
    }
+   
+   
    
    //sets all buttons to unclickable with given values as text.
    public void enabledOff()

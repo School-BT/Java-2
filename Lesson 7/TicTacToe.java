@@ -83,34 +83,48 @@ public class TicTacToe extends JFrame implements  ActionListener
       onClick(getButtonNumber(b));
    }
    
-      
+   
+   //condencing actionPerformed methods
    public void onClick(int number)
    {
       buttons[number].setEnabled(false);
-      
-      
+            
       if(playerSelect == 0)
       {
-         buttons[number].setText(X);
-         playerSelect = 1;
-         remove(number);
-         record(number,buttons[number].getText());
-         checkingWins();
-         if(clickCounter != 8)
-            randomClick();
-         clickCounter += 1;
+         userOnClick(number);
       }else
       {
-         buttons[number].setText(O);
-         playerSelect = 0;
-         remove(number);
-         record(number,buttons[number].getText());
-         checkingLoses();
-         clickCounter += 1;
+         oponentOnClick(number);
       }
    }
    
+   //places the X's based on user's click
+   public void userOnClick(int number)
+   {
+      buttons[number].setText(X);
+      playerSelect = 1;
+      remove(number);
+      record(number,buttons[number].getText());
+      checkingWins();
+      if(clickCounter != 8)
+         randomClick();
+      clickCounter += 1;
+   }
    
+   // places the O's randomized
+   public void oponentOnClick(int number)
+   {
+      buttons[number].setText(O);
+      playerSelect = 0;
+      remove(number);
+      record(number,buttons[number].getText());
+      checkingLoses();
+      clickCounter += 1;
+   }
+   
+   
+   
+   //sets up the plays array
    public void setUpPlays()
    {
       for(int i = 0;i < 3; ++i)
@@ -123,6 +137,8 @@ public class TicTacToe extends JFrame implements  ActionListener
    }
    
    
+   
+   //records placement of button pushes
    public void record(int num, String letter)
    {
       switch(num)
@@ -159,13 +175,49 @@ public class TicTacToe extends JFrame implements  ActionListener
    }
    
    
+   //keeps track of spaces for automated oponent
    public void remove(int num)
    {
       avalibleButtons[num] = 1;      
    }
    
    
+   //condences ActionListener
    public void randomClick()
+   {
+      int x = topClick();
+      
+      int[] temp = new int[x];
+      int j = 0;
+      
+      temp = middleClick(temp,j);
+      
+      Random rand = new Random();
+      int randomNum = rand.nextInt(x);
+      
+      int randButton = temp[randomNum];
+      
+      buttons[randButton].doClick();
+   }
+   
+   
+   //middle part of onClick
+   public int[] middleClick(int[] temp,int j)
+   {
+      for(int i = 0; i < COUNT ;++i)
+      {
+         if(avalibleButtons[i] == 0)
+         {
+            temp[j] = i;
+            j += 1;
+         }  
+      }
+      
+      return temp;
+   }
+   
+   //top part of onClick
+   public int topClick()
    {
       int x = 0;
       
@@ -177,35 +229,22 @@ public class TicTacToe extends JFrame implements  ActionListener
          }
       }
       
-      int[] temp = new int[x];
-      int j = 0;
-      
-      for(int i = 0; i < COUNT ;++i)
-      {
-         if(avalibleButtons[i] == 0)
-         {
-            temp[j] = i;
-            j += 1;
-         }  
-      }
-      
-      Random rand = new Random();
-      int randomNum = rand.nextInt(x);
-      
-      int randButton = temp[randomNum];
-      
-      buttons[randButton].doClick();
+      return x;
    }
    
    
+   
+   //**************MAIN*****************
    public static void main(String[] args)
    {
       TicTacToe frame = new TicTacToe();
       frame.setVisible(true);
       frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
    }
+   //************END MAIN***************
 
-
+   
+   //Checks plays for wins
    public void checkingWins()
    {
       String[] win = {X,X,X};
@@ -215,6 +254,8 @@ public class TicTacToe extends JFrame implements  ActionListener
       checkDiag(win);
    }
    
+   
+   //Checks plays for losing
    public void checkingLoses()
    {
       String[] lose = {O,O,O};
