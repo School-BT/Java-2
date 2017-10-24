@@ -1,0 +1,206 @@
+import javax.swing.*;
+import java.util.*;
+import java.util.Random;
+
+public class Blackjack extends JPanel
+{
+   public final static int DECK_NUM = 52;
+   
+   public static int[] deck = new int[DECK_NUM];
+   public static int[] quarterDeck = {1,2,3,4,5,6,7,8,9,10,11,12,13};
+   
+   public static String[] suits = {"spade","heart","diamond","club"};
+   public static int[] indexes = new int[DECK_NUM];
+   
+   public static int[] user = new int[8];
+   public static int[] comp = new int[8];
+   
+   public static void main(String[] args)
+   {
+       int LEN = 5;
+       for(int i = 0;i < LEN; ++i)
+       {
+        fullMonte();
+       }
+   }
+   
+   
+   public static void fullMonte()
+   {
+       initiate(user);
+       initiate(comp);
+       buildIndexes();
+       createDeck();
+       pickRandomCard(comp);
+       pickRandomCard(comp);
+       pickRandomCard(user);
+       pickRandomCard(user);
+       pickRandomCard(comp);
+       pickRandomCard(user);
+       
+       System.out.println(calculate(user));
+       System.out.println(calculate(comp));
+       
+       checkWin();
+    
+   }
+   
+   
+   public static void checkWin()
+   {
+       if(calculate(user) > 21 && calculate(comp)>21||calculate(user) > 21 && calculate(comp)<=21)//user bust
+           print("losex");
+       else if(calculate(comp) > 21 && calculate(user) <=21)//comp bust user not
+           print("winx");
+       else if(calculate(comp) >= calculate(user))//comp equal to or greater than user
+           print("losey");
+       else//user greater than comp
+          print("winy");
+   }
+   
+   public static void print(String str)
+   {
+       System.out.println(str);
+   }
+   
+   public static int calculate(int[] inputList)
+   {
+       int output = 0;
+       
+       int LEN = inputList.length;
+       for(int i = 0; i < LEN ; ++i)
+       {
+           int cal = inputList[i];
+           int number = calcHelp(cal);
+           output += number;
+       }
+       
+       return output;
+   }
+   
+   public static int calcHelp(int input)
+   {
+       switch(input)
+       {
+           case 11:
+           case 12:
+           case 13:
+               return 10;
+           default:
+               return input;
+       }
+   }
+   
+   
+   public static void buildIndexes()
+   {
+       indexes = new int[DECK_NUM];
+       
+       for(int i = 0; i < DECK_NUM; ++i)
+       {
+           indexes[i] = i;
+       }
+   }
+   
+   public static void createDeck()
+   {
+      for(int i = 0; i < DECK_NUM; ++i)
+      {
+         deck[i] = quarterDeck[i %( DECK_NUM/4)];
+      }
+   }
+   
+   
+   public static int randomNum(int topVal)
+   {
+       Random random = new Random();
+       int randNum = random.nextInt(topVal);
+       return randNum;
+   }
+   
+   
+   public static void pickRandomCard(int[] compUser)
+   {
+       int inLen = indexes.length;
+       
+       int LEN = indexes.length;
+       int randomNum = randomNum(inLen);
+       for(int i = 0; i < LEN ;++i)
+       {
+            if(compUser[i] == 0)
+            {
+                compUser[i] = deck[indexes[randomNum]];
+                break;
+            }
+       }
+       removeIndex(randomNum);
+   }
+   
+   
+   //removes the number *int* from intdexes
+   public static void removeIndex(int num)
+   {
+       int LEN = indexes.length;
+       int[] tempIndex = new int[LEN];
+       
+       //copy indexes
+       for(int i = 0;i < LEN; ++i)
+       {
+           int inNum = indexes[i];
+           tempIndex[i] = inNum;
+       }
+       
+       //remove info from indexes
+       indexes = new int[LEN - 1];
+       
+       remHelp(num,LEN,tempIndex);
+       
+   }
+   
+   
+   public static void remHelp(int num, int LEN, int[] tempIndex)
+   {
+       int x = 0;
+       
+       LEN -= 1;
+       
+       //add not the selected number's index to indexes.
+       for(int i = 0; i < LEN; ++i)
+       {
+           int inNum = tempIndex[i];
+           
+           if(num != inNum)
+           {
+               indexes[x] = inNum;
+               x+=1;
+           }
+           
+       }
+   }
+   
+   
+   public static void initiate(int[] compUser)
+   {
+       int LEN = compUser.length;
+       
+       for(int i = 0; i < LEN; ++i)
+       {
+           compUser[i] = 0;
+       }
+       
+   }
+   
+   
+   
+   public static void print(int[] input)
+   {
+       int LEN = input.length;
+       
+       for(int i = 0; i < LEN; ++i)
+       {
+           System.out.println("" + input[i]);
+           
+       }
+       
+   }
+}
