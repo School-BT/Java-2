@@ -1,150 +1,324 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 
-public class Blackjack {
-   
-   
-    public ArrayList<Card> spades = new ArrayList<Card>();
-    public ArrayList<Card> hearts = new ArrayList<Card>();
-    public ArrayList<Card> clubs = new ArrayList<Card>();
-    public ArrayList<Card> diamons = new ArrayList<Card>();
+public class Blackjack implements ActionListener
+{
     
-    public final String SPADE = "Spades";
-    public final String HEART = "Hearts";
-    public final String CLUB = "Clubs";
-    public final String DIAMOND = "Diamons";
+    public final static int DECK_NUM = 52;
+   
+   public static int[] deck = new int[DECK_NUM];
+   public static int[] quarterDeck = {1,2,3,4,5,6,7,8,9,10,11,12,13};
+   
+   public static String[] suits = {&quot;spade&quot;,&quot;heart&quot;,&quot;diamond&quot;,&quot;club&quot;};
+   public static int[] indexes = new int[DECK_NUM];
+   
+   public static int[] user = new int[8];
+   public static int[] comp = new int[8];
+   public static int userSelect = 0;
     
-   
-    public String name;
-    public int value;
-    public String suit;
-   
-    public class Card
+    JPanel scoreBoard = new JPanel();
+    JPanel buttons = new JPanel();
+    JPanel userCards = new JPanel();
+    JPanel compCards = new JPanel();
+    
+    //buttons
+    static JButton hitButton = new JButton(&quot;Hit&quot;);
+    JButton stayButton = new JButton(&quot;Stay&quot;);
+    
+    //scoreBoard
+    JTextField userScore = new JTextField();
+    JTextField compScore = new JTextField();
+    JLabel userName = new JLabel();
+    JLabel compName = new JLabel();
+    
+    JFrame f = new JFrame();
+    
+    
+    //builds the frame
+    public void buildFrame()
     {
-      public Card(int num,int suitInt)
-      {
-         setCard(num,suitInt);
-      }
-      
-      public String getSuit()
-      {
-         return suit;
-      }
-      
-      public String getName()
-      {
-         return name;
-      }
-      public int getValue()
-      {
-        return value;
-      }
-   
-      public void setCard(int num,int suitNum)
-      {
-        switch(num)
+        int[] compUserArray = {1,2,3,4,5,6,7,8};
+        
+        buildCardField(compUserArray);//for comp array
+        buildScoreBoard();
+        buildButtons();
+        buildCardField(compUserArray);//for user array
+        
+        f.add(compCards);
+        f.add(scoreBoard);
+        f.add(buttons);
+        f.add(userCards);
+    }
+    
+    
+    //builds score board panel
+    public void buildScoreBoard()
+    {
+        scoreBoard.add(compName);
+        scoreBoard.add(compScore);
+        scoreBoard.add(userName);
+        scoreBoard.add(userScore);
+        
+    }
+    
+    //builds card field panel
+    public void buildCardField(int[] aHand)
+    {
+        int[] xx = {2,2}; //delete
+        int[] yy = {2,3}; //delete 
+        if(aHand == xx)// aHand == userCardsArray
         {
-            case 1:
-                name = "ACE";
-                value = 1;
-                suit = convertSuit(suitNum);
-                break;
-            case 11:
-                name = "J";
-                value = 10;
-                suit = convertSuit(suitNum);
-                break;
-            case 12:
-                name = "Q";
-                value = 10;
-                suit = convertSuit(suitNum);
-                break;
-            case 13:
-                name = "K";
-                value = 10;
-                suit = convertSuit(suitNum);
-                break;
-            default:
-                name = "" + num;
-                value = num;
-                suit = convertSuit(suitNum);
-                break;
-       }//end switch statement
-     }//end setCard method
-     
-     public String convertSuit(int suitNum)
-     {
-         switch(suitNum)
-         {
-            case 0:
-               return SPADE;
-            case 1:
-               return HEART;
-            case 2:
-                 return DIAMOND;
-             default:
-                 return CLUB;               
-          }
-       }
-     }//end Card class
-  
-   public static void main(String args[])
+            for(int i = 0; i &lt; 8; ++i)
+            {
+                //userCards.add(userCardsArray[i]);
+            }
+        }
+        if(aHand == yy)//aHand == compCardsArray
+        {
+            for(int i = 0; i &lt; 8; ++i)
+            {
+                //compCards.add(compCardsArray[i]);
+            //cycle through hand to print cards to screen
+            }
+        }
+    }
+    
+    //builds buttons panel
+    public void buildButtons()
+    {
+        hitButton.addActionListener(this);
+        stayButton.addActionListener(this);
+        
+        buttons.add(hitButton);
+        buttons.add(stayButton);
+    }
+
+    
+    
+    public void actionPerformed(ActionEvent e)
+    {
+        JButton b = (JButton)e.getSource();
+        if(b == hitButton)
+        {   
+            if(userSelect == 0)
+            pickRandomCard(user);
+            else
+            {
+                pickRandomCard(comp);
+                compPlay();
+            }
+        }else if(b == stayButton)
+        {
+            userSelect = 1;
+            compPlay();
+        }
+    }
+    
+    
+    public static void compPlay()
+    {
+        if(calculate(comp) &gt; 17)
+           hitButton.doClick();
+        else
+            print(&quot;stay&quot;);
+    }
+    
+   
+   public static void main(String[] args)
    {
-       deck();
+       int LEN = 5;
+       for(int i = 0;i &lt; LEN; ++i)
+       {
+        fullMonte();
+       }
    }
    
-    public static ArrayList<Card> halfDeck(int x)
-    {
-        ArrayList<Card> deck = new ArrayList<Card>();
+   //initiates and populates everything
+   public static void fullMonte()
+   {
+       initiate(user);
+       initiate(comp);
+       buildIndexes();
+       createDeck();
+       pickRandomCard(comp);
+       pickRandomCard(comp);
+       pickRandomCard(user);
+       pickRandomCard(user);
+       pickRandomCard(comp);
+       pickRandomCard(user);
        
-        int LEN = 14;
-         
-        for(int i = 1;i < LEN; ++i)
-        {
-            Blackjack bj = new Blackjack();
-            deck.add(bj.new Card(i,x));
-        }
-        
-        return deck;
-    }
+       System.out.println(calculate(user));
+       System.out.println(calculate(comp));
+       
+       checkWin();
     
-    public static ArrayList<Card> deck()
-    {
-         ArrayList<Card> deck = new ArrayList<Card>();
-         
-         for(int i = 0; i < 4 ; ++i)
-         {
-            deck = deck(i);
-         }
-         
-         
-         print(deck);
-         return deck;
-    }
+   }
    
-    
-    public static void draw()
-    {
-      
-    }
-    
-    
-    public static void print(ArrayList<Card> cards)
-    {
-        int LEN = cards.size();
-        for(int i = 0; i<LEN ; ++i)
-        {
-            print(cards.get(i));
-        }
-    }
+   //rules for automated win/lose of hands.
+   public static void checkWin()
+   {
+       if(calculate(user) &gt; 21 &amp;&amp; calculate(comp)&gt;21||calculate(user) &gt; 21 &amp;&amp; calculate(comp)&lt;=21)//user bust
+           print(&quot;losex&quot;);
+       else if(calculate(comp) &gt; 21 &amp;&amp; calculate(user) &lt;=21)//comp bust user not
+           print(&quot;winx&quot;);
+       else if(calculate(comp) &gt;= calculate(user))//comp equal to or greater than user
+           print(&quot;losey&quot;);
+       else//user greater than comp
+          print(&quot;winy&quot;);
+   }
+   
+   //simplified print sequence.
+   public static void print(String str)
+   {
+       System.out.println(str);
+   }
+   
+   //calculates value of a hand. either userCards or compCards
+   public static int calculate(int[] inputList)
+   {
+       int output = 0;
+       
+       int LEN = inputList.length;
+       for(int i = 0; i &lt; LEN ; ++i)
+       {
+           int cal = inputList[i];
+           int number = calcHelp(cal);
+           output += number;
+       }
+       
+       return output;
+   }
+   
+   //sets jack, queen, king, and ace to their actual values
+   public static int calcHelp(int input)
+   {
+       switch(input)
+       {
+           case 1:
+           case 11:
+           case 12:
+           case 13:
+               return 10;
+           default:
+               return input;
+       }
+   }
+   
+   //initializes the list of avalibal card&#39;s indexes
+   public static void buildIndexes()
+   {
+       indexes = new int[DECK_NUM];
+       
+       for(int i = 0; i &lt; DECK_NUM; ++i)
+       {
+           indexes[i] = i;
+       }
+   }
+   
+   //builds full deck at the begining of program.
+   public static void createDeck()
+   {
+      for(int i = 0; i &lt; DECK_NUM; ++i)
+      {
+         deck[i] = quarterDeck[i %( DECK_NUM/4)];
+      }
+   }
+   
+   //simplified random int
+   public static int randomNum(int topVal)
+   {
+       Random random = new Random();
+       int randNum = random.nextInt(topVal);
+       return randNum;
+   }
+   
+   //picks a random card and puts it in the inputs array
+   public static void pickRandomCard(int[] compUser)
+   {
+       int inLen = indexes.length;
+       
+       int LEN = indexes.length;
+       int randomNum = randomNum(inLen);
+       for(int i = 0; i &lt; LEN ;++i)
+       {
+            if(compUser[i] == 0)
+            {
+                compUser[i] = deck[indexes[randomNum]];
+                break;
+            }
+       }
+       removeIndex(randomNum);
+   }
    
    
-    
-    public static void print(Card card)
-    {
-        System.out.println(card.getName()); 
-        System.out.println(card.getValue() + "");
-        System.out.println(card.getSuit());
-    }
+   //removes the number *int* from intdexes
+   public static void removeIndex(int num)
+   {
+       int LEN = indexes.length;
+       int[] tempIndex = new int[LEN];
+       
+       //copy indexes
+       for(int i = 0;i &lt; LEN; ++i)
+       {
+           int inNum = indexes[i];
+           tempIndex[i] = inNum;
+       }
+       
+       //remove info from indexes
+       indexes = new int[LEN - 1];
+       
+       remHelp(num,LEN,tempIndex);
+       
+   }
    
    
+   //helps remove integers from the avalible cards index list.
+   public static void remHelp(int num, int LEN, int[] tempIndex)
+   {
+       int x = 0;
+       
+       LEN -= 1;
+       
+       //add not the selected number&#39;s index to indexes.
+       for(int i = 0; i &lt; LEN; ++i)
+       {
+           int inNum = tempIndex[i];
+           
+           if(num != inNum)
+           {
+               indexes[x] = inNum;
+               x+=1;
+           }
+           
+       }
+   }
+   
+   //sets input int array to all zeros
+   public static void initiate(int[] compUser)
+   {
+       int LEN = compUser.length;
+       
+       for(int i = 0; i &lt; LEN; ++i)
+       {
+           compUser[i] = 0;
+       }
+       
+   }
+   
+   
+   //prints an array of ints
+   public static void print(int[] input)
+   {
+       int LEN = input.length;
+       
+       for(int i = 0; i &lt; LEN; ++i)
+       {
+           System.out.println(&quot;&quot; + input[i]);
+           
+       }
+       
+   }
 }
+
