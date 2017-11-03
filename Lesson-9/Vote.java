@@ -1,131 +1,163 @@
+/*
+Vote
+This is a Voting applet
+Ben Burger
+10/30/2017
+*/
+
+
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.*;
 
+//Extends JApplet
 public class Vote extends JApplet implements ActionListener{
-    
-    public static int[] candidateOne = new int[500];
-    public static int[] candidateTwo = new int[500];
     
     public static int canOneValue = 0;
     public static int canTwoValue = 0;
     
-    public static String uCand = &quot;&quot;;
+    public static String uCand = "";
+    public static String winning = "";
     
-    JButton canOne = new JButton(&quot;Vote For Candidate ONE&quot;);
-    JButton canTwo = new JButton(&quot;Vote For Candidate TWO&quot;);
+    //Three Buttons
+    JButton canOne = new JButton("Vote For Candidate 1.");
+    JButton canTwo = new JButton("Vote For Candidate 2.");
+    JButton results = new JButton("See Results.");
     
-    JButton results = new JButton(&quot;Results&quot;);
+    //Displays user selection
+    JLabel yourChoice = new JLabel();
     
-    JLabel resMsg = new JLabel();
+    //Displays Random Results
+    JLabel oneResMsg = new JLabel();
+    JLabel twoResMsg = new JLabel();
+    JLabel winnerMsg = new JLabel();
     
     
+    JPanel scorePan = new JPanel(new GridLayout(4,1,2,2));
+    JPanel pan = new JPanel();
     
     public Vote()
     {
-        
-        calculate(candidateOne);
-        calculate(candidateTwo);
-        
-        JFrame f = new JFrame();
-        
-        results.addActionListener(this);
-        canOne.addActionListener(this);
-        canTwo.addActionListener(this);
-        
-        f.add(resMsg);
-        f.add(canOne);
-        f.add(canTwo);
-        f.add(results);
-        
+        initiateCandidates();      
     }
     
     
+   public void init() 
+   {
+      canOne.addActionListener (this);
+      canTwo.addActionListener (this);
+      results.addActionListener(this);
+                
+      buildPan();
+      buildScorePan();
+      results.setVisible(false);
+      getContentPane().add(pan);
+   }
+   
+   //this hosts the buttons and scoreBoard
+   public void buildPan()
+   {    
+      pan.add(canOne);
+      pan.add(canTwo);
+      pan.add(results);
+      
+      pan.add(scorePan);
+   } 
     
+   //this hosts the results
+   public void buildScorePan()
+   {
+      yourChoice.setForeground(Color.RED);
+      scorePan.add(yourChoice);
+      scorePan.add(oneResMsg);
+      scorePan.add(twoResMsg);
+      winnerMsg.setFont(new Font("Arial",Font.BOLD,17));
+      winnerMsg.setForeground(Color.RED);
+      scorePan.add(winnerMsg);
+   }
     
     public void actionPerformed(ActionEvent e)
     {
         JButton b = (JButton)e.getSource();
         
         if(b == canOne)
+        {
             canOneFunction();
+        }
         else if(b == canTwo)
+        {
             canTwoFunction();
-        else if(b == results)
+        }
+        else
+        {
             resultsFunction();
+        }
     }
     
+    //what happens on button click
     public void canOneFunction()
     {
         canOneValue += 1;
-        uCand = &quot;Candidate One.&quot;;
-        canOne.setVisible(false);
-        canTwo.setVisible(false);
+        uCand = "Candidate One.";
+        canTwo.setEnabled(false);
+        canOne.setEnabled(false);
         results.setVisible(true);
     }
     
+    //what happens on button click
     public void canTwoFunction()
     {
         canTwoValue += 1;
-        uCand = &quot;Candidate Two.&quot;;
-        canTwo.setVisible(false);
-        canOne.setVisible(false);
+        uCand = "Candidate Two.";
+        canTwo.setEnabled(false);
+        canOne.setEnabled(false);
         results.setVisible(true);
     }
     
-    public void resultsFunction()
-    {
-        String score = &quot;You voted for &quot; + uCand + &quot;&#92;n&quot; +
-            &quot;Candidate One has&quot; + canOneValue + &quot;&#92;n&quot; +
-            &quot;Candidate Two has&quot; + canTwoValue;
-        
-        resMsg.setText(score);
+    //what happens on button click 
+   public void resultsFunction()
+   {        
+      String yourCand = "You voted for " + uCand;
+      String candOneStr = "Candidate One has " + canOneValue + " votes.";
+      String candTwoStr = "Candidate Two has " + canTwoValue + " votes.";
+      
+      getWinning();
+      
+      yourChoice.setText(yourCand);
+      oneResMsg.setText(candOneStr);
+      twoResMsg.setText(candTwoStr);
+      winnerMsg.setText(winning);
+      
+      results.setVisible(false);
     }
     
     
+    public void getWinning()
+    {
+      if(canOneValue > canTwoValue)
+         winning = "Candidate One WON!";
+      else if(canTwoValue > canOneValue)
+         winning = "Candidate Two WON!";
+      else
+         winning = "The Candidates Tied!";
+    }
+    
+    //creates random results
     public static void initiateCandidates()
     {
         Random rand = new Random();
         
-        for(int i = 0; i &lt; 500; ++i)
+        for(int i = 0; i < 500; ++i)
         {
             int oneVote = rand.nextInt(2);
-            int twoVote = 0;
+            int twoVote = rand.nextInt(2);
         
-            if(oneVote == 1)
-                twoVote = 0;
-            else
-                twoVote = 1;
-              candidateOne[i] = oneVote;
-              candidateTwo[i] = twoVote;
+            canOneValue += oneVote;
+            canTwoValue += twoVote;
         }
-    }
+    }  
     
-    
-    public static void calculate(int[] cand)
-    {
-        int total = 0;
-        for(int i = 0; i &lt; cand.length; ++i)
-        {
-            total += cand[i];
-        }
-        
-        if(cand == candidateOne)
-            canOneValue = total;
-        else
-            canTwoValue = total;
-    }
-    
-    
-    public static void main(String args[]) {
-        initiateCandidates();
-        calculate(candidateOne);
-        calculate(candidateTwo);
-        
-        System.out.println(&quot;Sum of x+y = &quot; + canTwoValue);
-        System.out.println(&quot;Sum of x+y = &quot; + canOneValue);
-    }
-}
 
+}
